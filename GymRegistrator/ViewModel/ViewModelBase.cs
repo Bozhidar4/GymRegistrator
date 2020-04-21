@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace GymRegistrator.ViewModel
+namespace GymRegistrator.UI.ViewModel
 {
     public class ViewModelBase : INotifyPropertyChanged
     {

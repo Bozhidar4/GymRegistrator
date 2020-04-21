@@ -1,8 +1,8 @@
-﻿using GymRegistrator.Data;
+﻿using GymRegistrator.UI.Data;
 using GymRegistrator.Model;
 using System.Collections.ObjectModel;
 
-namespace GymRegistrator.ViewModel
+namespace GymRegistrator.UI.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {

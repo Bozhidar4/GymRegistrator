@@ -1,7 +1,7 @@
 ﻿using GymRegistrator.Model;
 using System.Collections.Generic;
 
-namespace GymRegistrator.Data
+namespace GymRegistrator.UI.Data
 {
     public class GymClientService : IGymClientService
     {

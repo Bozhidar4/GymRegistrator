@@ -1,11 +1,11 @@
-﻿using GymRegistrator.ViewModel;
+﻿using GymRegistrator.UI.ViewModel;
 using System.Windows;
 
-namespace GymRegistrator
+namespace GymRegistrator.UI
 {
     public partial class MainWindow : Window
     {
-        private MainViewModel _viewModel;
+        private readonly MainViewModel _viewModel;
         public MainWindow(MainViewModel viewModel)
         {
             InitializeComponent();

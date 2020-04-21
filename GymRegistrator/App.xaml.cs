@@ -1,8 +1,8 @@
 ﻿using Autofac;
-using GymRegistrator.Startup;
+using GymRegistrator.UI.Startup;
 using System.Windows;
 
-namespace GymRegistrator
+namespace GymRegistrator.UI
 {
     /// <summary>
     /// Interaction logic for App.xaml

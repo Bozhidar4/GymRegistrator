@@ -1,8 +1,8 @@
 ﻿using Autofac;
-using GymRegistrator.Data;
-using GymRegistrator.ViewModel;
+using GymRegistrator.UI.Data;
+using GymRegistrator.UI.ViewModel;
 
-namespace GymRegistrator.Startup
+namespace GymRegistrator.UI.Startup
 {
     public class Bootstrapper
     {
