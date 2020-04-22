@@ -1,41 +1,22 @@
-﻿using GymRegistrator.UI.Data;
-using GymRegistrator.Model;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace GymRegistrator.UI.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
-        private IGymClientService _gymClientService;
-        private GymClient _selectedGymClient;
+        public INavigationViewModel NavigationViewModel { get; }
+        public IGymClientDetailViewModel ClientDetailViewModel { get; }
 
-        public MainViewModel(IGymClientService gymClientService)
+
+        public MainViewModel(INavigationViewModel navigationViewModel, IGymClientDetailViewModel clientDetailViewModel)
         {
-            GymClients = new ObservableCollection<GymClient>();
-            _gymClientService = gymClientService;
+            NavigationViewModel = navigationViewModel;
+            ClientDetailViewModel = clientDetailViewModel;
         }
 
         public async Task LoadAsync()
         {
-            var gymClients = await _gymClientService.GetAllAsync();
-            GymClients.Clear();
-            foreach (var client in gymClients)
-            {
-                GymClients.Add(client);
-            }
-        }
-
-        public ObservableCollection<GymClient> GymClients { get; set; }
-
-        public GymClient SelectedGymClient
-        {
-            get { return _selectedGymClient; }
-            set 
-            { 
-                _selectedGymClient = value;
-                OnPropertyChanged();
-            }
+            await NavigationViewModel.LoadAsync();
         }
     }
 }

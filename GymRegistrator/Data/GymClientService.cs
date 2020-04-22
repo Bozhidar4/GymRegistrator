@@ -1,7 +1,6 @@
 ﻿using GymRegistrator.DataAccess;
 using GymRegistrator.Model;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Threading.Tasks;
 
@@ -16,11 +15,11 @@ namespace GymRegistrator.UI.Data
             _contextCreator = contextCreator;
         }
 
-        public async Task<IList<GymClient>> GetAllAsync()
+        public async Task<GymClient> GetByIdAsync(int clientId)
         {
             using (var ctx = _contextCreator())
             {
-                return await ctx.GymClients.AsNoTracking().ToListAsync();
+                return await ctx.GymClients.AsNoTracking().SingleAsync(c => c.Id == clientId);
             }
         }
     }

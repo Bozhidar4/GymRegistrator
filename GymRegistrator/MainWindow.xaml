@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GymRegistrator.UI"
+        xmlns:view="clr-namespace:GymRegistrator.UI.View"
         mc:Ignorable="d"
         Title="GymRegistrator" Height="450" Width="800" FontSize="20"
         WindowStartupLocation="CenterScreen">
@@ -12,32 +13,7 @@
             <ColumnDefinition Width="200"></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <ListView ItemsSource="{Binding GymClients}"
-                  SelectedItem="{Binding SelectedGymClient, Mode=TwoWay}"
-                  DisplayMemberPath="FirstName">
-        </ListView>
-
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition></RowDefinition>
-            </Grid.RowDefinitions>
-            <Label Content="First Name" Margin="10 10 10 0"></Label>
-            <TextBox Grid.Row="1" Text="{Binding SelectedGymClient.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                     Margin="10 0 10 10"></TextBox>
-
-            <Label Grid.Row="2" Content="Last Name" Margin="10 0"></Label>
-            <TextBox Grid.Row="3" Text="{Binding SelectedGymClient.LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                     Margin="10 0 10 10"></TextBox>
-
-            <Label Grid.Row="4" Content="Email" Margin="10 0"></Label>
-            <TextBox Grid.Row="5" Text="{Binding SelectedGymClient.Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                     Margin="10 0 10 10"></TextBox>
-        </Grid>
+        <view:NavigationView DataContext="{Binding NavigationViewModel}"></view:NavigationView>
+        <view:GymClientDetailView Grid.Column="1" DataContext="{Binding GymClientDetailViewModel}"></view:GymClientDetailView>
     </Grid>
 </Window>
