@@ -1,6 +1,7 @@
 ﻿using GymRegistrator.UI.Data;
 using GymRegistrator.Model;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace GymRegistrator.UI.ViewModel
 {
@@ -15,9 +16,9 @@ namespace GymRegistrator.UI.ViewModel
             _gymClientService = gymClientService;
         }
 
-        public void Load()
+        public async Task LoadAsync()
         {
-            var gymClients = _gymClientService.GetAll();
+            var gymClients = await _gymClientService.GetAllAsync();
             GymClients.Clear();
             foreach (var client in gymClients)
             {
