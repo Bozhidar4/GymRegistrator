@@ -1,8 +1,6 @@
-﻿using GymRegistrator.Model;
-using GymRegistrator.UI.Data;
+﻿using GymRegistrator.UI.Data;
 using GymRegistrator.UI.Event;
 using Prism.Events;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;

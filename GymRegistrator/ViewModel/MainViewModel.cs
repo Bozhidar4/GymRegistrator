@@ -5,13 +5,13 @@ namespace GymRegistrator.UI.ViewModel
     public class MainViewModel : ViewModelBase
     {
         public INavigationViewModel NavigationViewModel { get; }
-        public IGymClientDetailViewModel ClientDetailViewModel { get; }
+        public IGymClientDetailViewModel GymClientDetailViewModel { get; }
 
 
-        public MainViewModel(INavigationViewModel navigationViewModel, IGymClientDetailViewModel clientDetailViewModel)
+        public MainViewModel(INavigationViewModel navigationViewModel, IGymClientDetailViewModel gymClientDetailViewModel)
         {
             NavigationViewModel = navigationViewModel;
-            ClientDetailViewModel = clientDetailViewModel;
+            GymClientDetailViewModel = gymClientDetailViewModel;
         }
 
         public async Task LoadAsync()
