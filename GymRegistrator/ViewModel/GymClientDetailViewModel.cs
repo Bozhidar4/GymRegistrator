@@ -1,8 +1,11 @@
 ﻿using GymRegistrator.Model;
 using GymRegistrator.UI.Data;
 using GymRegistrator.UI.Event;
+using Prism.Commands;
 using Prism.Events;
+using System;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace GymRegistrator.UI.ViewModel
 {
@@ -16,6 +19,25 @@ namespace GymRegistrator.UI.ViewModel
             _clientService = clientService;
             _eventAggregator = eventAggregator;
             _eventAggregator.GetEvent<OpenClientDetailViewEvent>().Subscribe(OnOpenClientDetailView);
+
+            SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
+        }
+
+        private async void OnSaveExecute()
+        {
+            await _clientService.SaveAsync(Client);
+
+            _eventAggregator.GetEvent<AfterClientSavedEvent>().Publish(
+                new AfterClientSavedEventArgs
+                {
+                    Id = Client.Id,
+                    DisplayMember = $"{Client.FirstName} {Client.LastName}"
+                });
+        }
+
+        private bool OnSaveCanExecute()
+        {
+            return true;
         }
 
         private GymClient _client;
@@ -39,5 +61,7 @@ namespace GymRegistrator.UI.ViewModel
         {
             await LoadAsync(clientId);
         }
+
+        public ICommand SaveCommand { get; }
     }
 }

@@ -103,12 +103,14 @@
     <Compile Include="Data\IGymClientLookupDataService.cs" />
     <Compile Include="Data\IGymClientService.cs" />
     <Compile Include="Data\LookupDataService.cs" />
+    <Compile Include="Event\AfterClientSavedEvent.cs" />
     <Compile Include="Event\OpenClientDetailViewEvent.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="ViewModel\GymClientDetailViewModel.cs" />
     <Compile Include="ViewModel\IGymClientDetailViewModel.cs" />
     <Compile Include="ViewModel\INavigationViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\NavigationItemViewModel.cs" />
     <Compile Include="ViewModel\NavigationViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="View\GymClientDetailView.xaml.cs">

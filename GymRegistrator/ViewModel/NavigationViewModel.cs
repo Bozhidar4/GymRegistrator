@@ -2,7 +2,9 @@
 using GymRegistrator.UI.Data;
 using GymRegistrator.UI.Event;
 using Prism.Events;
+using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GymRegistrator.UI.ViewModel
@@ -11,16 +13,24 @@ namespace GymRegistrator.UI.ViewModel
     {
         private IGymClientLookupDataService _clientLookupService;
         private IEventAggregator _eventAggregator;
+        private NavigationItemViewModel _selectedClient;
 
         public NavigationViewModel(IGymClientLookupDataService clientLookupService, IEventAggregator eventAggregator)
         {
             _clientLookupService = clientLookupService;
             _eventAggregator = eventAggregator;
-            GymClients = new ObservableCollection<LookupItem>();
+            GymClients = new ObservableCollection<NavigationItemViewModel>();
+            _eventAggregator.GetEvent<AfterClientSavedEvent>().Subscribe(AfterClientSaved);
         }
 
-        private LookupItem _selectedClient;
-        public LookupItem SelectedClient
+        private void AfterClientSaved(AfterClientSavedEventArgs obj)
+        {
+            var lookupItem = GymClients.Single(c => c.Id == obj.Id);
+            lookupItem.DisplayMember = obj.DisplayMember;
+        }
+
+        
+        public NavigationItemViewModel SelectedClient
         {
             get { return _selectedClient; }
             set
@@ -35,7 +45,7 @@ namespace GymRegistrator.UI.ViewModel
             }
         }
 
-        public ObservableCollection<LookupItem> GymClients { get; }
+        public ObservableCollection<NavigationItemViewModel> GymClients { get; }
 
         public async Task LoadAsync()
         {
@@ -43,7 +53,7 @@ namespace GymRegistrator.UI.ViewModel
             GymClients.Clear();
             foreach (var item in lookup)
             {
-                GymClients.Add(item);
+                GymClients.Add(new NavigationItemViewModel(item.Id, item.DisplayMember));
             }
         }
     }

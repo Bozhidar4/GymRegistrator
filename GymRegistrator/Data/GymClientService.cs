@@ -22,5 +22,15 @@ namespace GymRegistrator.UI.Data
                 return await ctx.GymClients.AsNoTracking().SingleAsync(c => c.Id == clientId);
             }
         }
+
+        public async Task SaveAsync(GymClient client)
+        {
+            using (var ctx = _contextCreator())
+            {
+                ctx.GymClients.Attach(client);
+                ctx.Entry(client).State = EntityState.Modified;
+                await ctx.SaveChangesAsync();
+            }
+        }
     }
 }
