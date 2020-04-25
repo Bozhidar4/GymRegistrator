@@ -14,6 +14,7 @@ namespace GymRegistrator.Model
         public string LastName { get; set; }
 
         [StringLength(30)]
+        [EmailAddress]
         public string Email { get; set; }
     }
 }

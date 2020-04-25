@@ -1,6 +1,7 @@
 ﻿using GymRegistrator.Model;
 using GymRegistrator.UI.Data;
 using GymRegistrator.UI.Event;
+using GymRegistrator.UI.Wrapper;
 using Prism.Commands;
 using Prism.Events;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace GymRegistrator.UI.ViewModel
     {
         private IGymClientService _clientService;
         private IEventAggregator _eventAggregator;
-        private GymClient _client;
+        private GymClientWrapper _client;
 
         public GymClientDetailViewModel(IGymClientService clientService, IEventAggregator eventAggregator)
         {
@@ -23,7 +24,7 @@ namespace GymRegistrator.UI.ViewModel
             SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
         }
 
-        public GymClient Client
+        public GymClientWrapper Client
         {
             get { return _client; }
             private set
@@ -37,7 +38,7 @@ namespace GymRegistrator.UI.ViewModel
 
         private async void OnSaveExecute()
         {
-            await _clientService.SaveAsync(Client);
+            await _clientService.SaveAsync(Client.Model);
 
             _eventAggregator.GetEvent<AfterClientSavedEvent>().Publish(
                 new AfterClientSavedEventArgs
@@ -49,12 +50,24 @@ namespace GymRegistrator.UI.ViewModel
 
         private bool OnSaveCanExecute()
         {
-            return true;
+            return Client != null && !Client.HasErrors;
         }
 
         public async Task LoadAsync(int clientId)
         {
-            Client = await _clientService.GetByIdAsync(clientId);
+            var gymClient = await _clientService.GetByIdAsync(clientId);
+
+            Client = new GymClientWrapper(gymClient);
+
+            Client.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(Client.HasErrors))
+                {
+                    ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+                }
+            };
+
+            ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
         }
 
         private async void OnOpenClientDetailView(int clientId)
