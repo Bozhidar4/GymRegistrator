@@ -13,5 +13,6 @@ namespace GymRegistrator.UI.Data.Repositories
         bool HasChanges();
 
         void Add(GymClient gymClient);
+        void Remove(GymClient model);
     }
 }

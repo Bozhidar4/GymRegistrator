@@ -103,6 +103,7 @@
     <Compile Include="Data\Lookups\IGymClientLookupDataService.cs" />
     <Compile Include="Data\Repositories\IGymClientRepository.cs" />
     <Compile Include="Data\Lookups\LookupDataService.cs" />
+    <Compile Include="Event\AfterClientDeletedEvent.cs" />
     <Compile Include="Event\AfterClientSavedEvent.cs" />
     <Compile Include="Event\OpenClientDetailViewEvent.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />

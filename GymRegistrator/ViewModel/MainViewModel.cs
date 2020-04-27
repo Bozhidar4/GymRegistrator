@@ -25,6 +25,7 @@ namespace GymRegistrator.UI.ViewModel
             _messageDialogService = messageDialogService;
 
             _eventAggregator.GetEvent<OpenClientDetailViewEvent>().Subscribe(OnOpenClientDetailView);
+            _eventAggregator.GetEvent<AfterClientDeletedEvent>().Subscribe(AfterClientDeleted);
 
             CreateNewClientCommand = new DelegateCommand(OnCreateNewClientExecute);
 
@@ -66,6 +67,11 @@ namespace GymRegistrator.UI.ViewModel
         private void OnCreateNewClientExecute()
         {
             OnOpenClientDetailView(null);
+        }
+
+        private void AfterClientDeleted(int clientId)
+        {
+            GymClientDetailViewModel = null;
         }
     }
 }

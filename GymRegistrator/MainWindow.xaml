@@ -5,9 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GymRegistrator.UI"
         xmlns:view="clr-namespace:GymRegistrator.UI.View"
+        xmlns:viewModel="clr-namespace:GymRegistrator.UI.ViewModel"
         mc:Ignorable="d"
         Title="GymRegistrator" Height="450" Width="800" FontSize="20"
         WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewModel:GymClientDetailViewModel}">
+            <view:GymClientDetailView></view:GymClientDetailView>
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -23,6 +29,6 @@
             </MenuItem>
         </Menu>
         <view:NavigationView Grid.Row="1" DataContext="{Binding NavigationViewModel}"></view:NavigationView>
-        <view:GymClientDetailView Grid.Row="1" Grid.Column="1" DataContext="{Binding GymClientDetailViewModel}"></view:GymClientDetailView>
+        <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding GymClientDetailViewModel}"></ContentControl>
     </Grid>
 </Window>

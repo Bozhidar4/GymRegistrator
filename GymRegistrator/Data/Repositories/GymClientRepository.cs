@@ -29,6 +29,11 @@ namespace GymRegistrator.UI.Data.Repositories
             return _context.ChangeTracker.HasChanges();
         }
 
+        public void Remove(GymClient model)
+        {
+            _context.GymClients.Remove(model);
+        }
+
         public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
