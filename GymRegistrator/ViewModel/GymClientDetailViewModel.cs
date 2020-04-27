@@ -1,8 +1,10 @@
-﻿using GymRegistrator.UI.Data.Repositories;
+﻿using GymRegistrator.Model;
+using GymRegistrator.UI.Data.Repositories;
 using GymRegistrator.UI.Event;
 using GymRegistrator.UI.Wrapper;
 using Prism.Commands;
 using Prism.Events;
+using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -49,6 +51,31 @@ namespace GymRegistrator.UI.ViewModel
 
         public ICommand SaveCommand { get; }
 
+        public async Task LoadAsync(int? clientId)
+        {
+            var gymClient = clientId.HasValue
+                ? await _gymClientRepository.GetByIdAsync(clientId.Value)
+                : CreateNewClient();
+
+            Client = new GymClientWrapper(gymClient);
+
+            Client.PropertyChanged += (s, e) =>
+            {
+                if (!HasChanges)
+                {
+                    HasChanges = _gymClientRepository.HasChanges();
+                }
+                if (e.PropertyName == nameof(Client.HasErrors))
+                {
+                    ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+                }
+            };
+
+            ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+
+            if (gymClient.Id == 0) gymClient.FirstName = "";
+        }
+
         private async void OnSaveExecute()
         {
             await _gymClientRepository.SaveAsync();
@@ -66,25 +93,11 @@ namespace GymRegistrator.UI.ViewModel
             return Client != null && !Client.HasErrors && HasChanges;
         }
 
-        public async Task LoadAsync(int clientId)
+        private GymClient CreateNewClient()
         {
-            var gymClient = await _gymClientRepository.GetByIdAsync(clientId);
-
-            Client = new GymClientWrapper(gymClient);
-
-            Client.PropertyChanged += (s, e) =>
-            {
-                if (!HasChanges)
-                {
-                    HasChanges = _gymClientRepository.HasChanges();
-                }
-                if (e.PropertyName == nameof(Client.HasErrors))
-                {
-                    ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
-                }
-            };
-
-            ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+            var gymClient = new GymClient();
+            _gymClientRepository.Add(gymClient);
+            return gymClient;
         }
     }
 }

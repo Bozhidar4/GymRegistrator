@@ -1,8 +1,10 @@
 ﻿using GymRegistrator.UI.Event;
 using GymRegistrator.UI.View.Services;
+using Prism.Commands;
 using Prism.Events;
 using System;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace GymRegistrator.UI.ViewModel
 {
@@ -24,6 +26,8 @@ namespace GymRegistrator.UI.ViewModel
 
             _eventAggregator.GetEvent<OpenClientDetailViewEvent>().Subscribe(OnOpenClientDetailView);
 
+            CreateNewClientCommand = new DelegateCommand(OnCreateNewClientExecute);
+
             NavigationViewModel = navigationViewModel;
         }
 
@@ -39,13 +43,15 @@ namespace GymRegistrator.UI.ViewModel
             }
         }
 
+        public ICommand CreateNewClientCommand { get; }
+
 
         public async Task LoadAsync()
         {
             await NavigationViewModel.LoadAsync();
         }
 
-        private async void OnOpenClientDetailView(int clientId)
+        private async void OnOpenClientDetailView(int? clientId)
         {
             if (GymClientDetailViewModel != null && GymClientDetailViewModel.HasChanges)
             {
@@ -55,6 +61,11 @@ namespace GymRegistrator.UI.ViewModel
             }
             GymClientDetailViewModel = _gymClientDetailViewModelCreator();
             await GymClientDetailViewModel.LoadAsync(clientId);
+        }
+
+        private void OnCreateNewClientExecute()
+        {
+            OnOpenClientDetailView(null);
         }
     }
 }

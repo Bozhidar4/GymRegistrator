@@ -14,6 +14,11 @@ namespace GymRegistrator.UI.Data.Repositories
             _context = context;
         }
 
+        public void Add(GymClient gymClient)
+        {
+            _context.GymClients.Add(gymClient);
+        }
+
         public async Task<GymClient> GetByIdAsync(int clientId)
         {
             return await _context.GymClients.SingleAsync(c => c.Id == clientId);

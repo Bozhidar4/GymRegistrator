@@ -2,7 +2,7 @@
 
 namespace GymRegistrator.UI.Event
 {
-    public class OpenClientDetailViewEvent : PubSubEvent<int>
+    public class OpenClientDetailViewEvent : PubSubEvent<int?>
     {
     }
 }

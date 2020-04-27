@@ -22,8 +22,16 @@ namespace GymRegistrator.UI.ViewModel
 
         private void AfterClientSaved(AfterClientSavedEventArgs obj)
         {
-            var lookupItem = GymClients.Single(c => c.Id == obj.Id);
-            lookupItem.DisplayMember = obj.DisplayMember;
+            var lookupItem = GymClients.SingleOrDefault(c => c.Id == obj.Id);
+
+            if (lookupItem == null)
+            {
+                GymClients.Add(new NavigationItemViewModel(obj.Id, obj.DisplayMember, _eventAggregator));
+            }
+            else
+            {
+                lookupItem.DisplayMember = obj.DisplayMember;
+            }
         }
 
         public ObservableCollection<NavigationItemViewModel> GymClients { get; }

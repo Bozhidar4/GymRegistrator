@@ -11,5 +11,7 @@ namespace GymRegistrator.UI.Data.Repositories
         Task SaveAsync();
 
         bool HasChanges();
+
+        void Add(GymClient gymClient);
     }
 }
