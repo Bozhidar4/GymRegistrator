@@ -99,10 +99,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Data\GymClientService.cs" />
-    <Compile Include="Data\IGymClientLookupDataService.cs" />
-    <Compile Include="Data\IGymClientService.cs" />
-    <Compile Include="Data\LookupDataService.cs" />
+    <Compile Include="Data\Repositories\GymClientRepository.cs" />
+    <Compile Include="Data\Lookups\IGymClientLookupDataService.cs" />
+    <Compile Include="Data\Repositories\IGymClientRepository.cs" />
+    <Compile Include="Data\Lookups\LookupDataService.cs" />
     <Compile Include="Event\AfterClientSavedEvent.cs" />
     <Compile Include="Event\OpenClientDetailViewEvent.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
@@ -119,6 +119,8 @@
     <Compile Include="View\NavigationView.xaml.cs">
       <DependentUpon>NavigationView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Services\IMessageDialogService.cs" />
+    <Compile Include="View\Services\MessageDialogService.cs" />
     <Compile Include="Wrapper\GymClientWrapper.cs" />
     <Compile Include="Wrapper\ModelWrapper.cs" />
     <Compile Include="Wrapper\NotifyDataErrorInfoBase.cs" />

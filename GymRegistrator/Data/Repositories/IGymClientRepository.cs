@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace GymRegistrator.UI.Data
+namespace GymRegistrator.UI.Data.Repositories
 {
-    public interface IGymClientService
+    public interface IGymClientRepository
     {
         Task<GymClient> GetByIdAsync(int clientId);
 
-        Task SaveAsync(GymClient client);
+        Task SaveAsync();
+
+        bool HasChanges();
     }
 }

@@ -1,4 +1,4 @@
-﻿using GymRegistrator.UI.Data;
+﻿using GymRegistrator.UI.Data.Lookups;
 using GymRegistrator.UI.Event;
 using Prism.Events;
 using System.Collections.ObjectModel;
@@ -11,7 +11,6 @@ namespace GymRegistrator.UI.ViewModel
     {
         private IGymClientLookupDataService _clientLookupService;
         private IEventAggregator _eventAggregator;
-        private NavigationItemViewModel _selectedClient;
 
         public NavigationViewModel(IGymClientLookupDataService clientLookupService, IEventAggregator eventAggregator)
         {
@@ -27,22 +26,6 @@ namespace GymRegistrator.UI.ViewModel
             lookupItem.DisplayMember = obj.DisplayMember;
         }
 
-        
-        public NavigationItemViewModel SelectedClient
-        {
-            get { return _selectedClient; }
-            set
-            {
-                _selectedClient = value;
-                OnPropertyChanged();
-
-                if (_selectedClient != null)
-                {
-                    _eventAggregator.GetEvent<OpenClientDetailViewEvent>().Publish(_selectedClient.Id);
-                }
-            }
-        }
-
         public ObservableCollection<NavigationItemViewModel> GymClients { get; }
 
         public async Task LoadAsync()
@@ -51,7 +34,7 @@ namespace GymRegistrator.UI.ViewModel
             GymClients.Clear();
             foreach (var item in lookup)
             {
-                GymClients.Add(new NavigationItemViewModel(item.Id, item.DisplayMember));
+                GymClients.Add(new NavigationItemViewModel(item.Id, item.DisplayMember, _eventAggregator));
             }
         }
     }

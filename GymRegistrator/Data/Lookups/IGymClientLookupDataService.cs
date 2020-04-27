@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace GymRegistrator.UI.Data
+namespace GymRegistrator.UI.Data.Lookups
 {
     public interface IGymClientLookupDataService
     {

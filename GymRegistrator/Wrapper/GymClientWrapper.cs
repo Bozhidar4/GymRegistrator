@@ -35,9 +35,9 @@ namespace GymRegistrator.UI.Wrapper
             switch (propertyName)
             {
                 case nameof(FirstName):
-                    if (string.Equals(FirstName, "Robot", StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(FirstName, " "))
                     {
-                        yield return "Robots are not valid friends";
+                        yield return "Please enter a valid name";
                     }
                     break;
             }

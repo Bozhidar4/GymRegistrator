@@ -6,7 +6,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GymRegistrator.UI.Data
+namespace GymRegistrator.UI.Data.Lookups
 {
     public class LookupDataService : IGymClientLookupDataService
     {
