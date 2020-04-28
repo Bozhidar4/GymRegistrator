@@ -13,7 +13,7 @@ namespace GymRegistrator.UI.ViewModel
         private IEventAggregator _eventAggregator;
         private Func<IGymClientDetailViewModel> _gymClientDetailViewModelCreator;
         private IMessageDialogService _messageDialogService;
-        private IGymClientDetailViewModel _gymClientDetailViewModel;
+        private IDetailViewModel _detailViewModel;
 
         public MainViewModel(INavigationViewModel navigationViewModel,
             Func<IGymClientDetailViewModel> gymClientDetailViewModelCreator, 
@@ -24,27 +24,27 @@ namespace GymRegistrator.UI.ViewModel
             _gymClientDetailViewModelCreator = gymClientDetailViewModelCreator;
             _messageDialogService = messageDialogService;
 
-            _eventAggregator.GetEvent<OpenClientDetailViewEvent>().Subscribe(OnOpenClientDetailView);
-            _eventAggregator.GetEvent<AfterClientDeletedEvent>().Subscribe(AfterClientDeleted);
+            _eventAggregator.GetEvent<OpenDetailViewEvent>().Subscribe(OnOpenDetailView);
+            _eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
 
-            CreateNewClientCommand = new DelegateCommand(OnCreateNewClientExecute);
+            CreateNewDetailCommand = new DelegateCommand<Type>(OnCreateNewDetailExecute);
 
             NavigationViewModel = navigationViewModel;
         }
 
         public INavigationViewModel NavigationViewModel { get; }
         
-        public IGymClientDetailViewModel GymClientDetailViewModel
+        public IDetailViewModel DetailViewModel
         {
-            get { return _gymClientDetailViewModel; }
+            get { return _detailViewModel; }
             private set 
             {
-                _gymClientDetailViewModel = value;
+                _detailViewModel = value;
                 OnPropertyChanged();
             }
         }
 
-        public ICommand CreateNewClientCommand { get; }
+        public ICommand CreateNewDetailCommand { get; }
 
 
         public async Task LoadAsync()
@@ -52,26 +52,33 @@ namespace GymRegistrator.UI.ViewModel
             await NavigationViewModel.LoadAsync();
         }
 
-        private async void OnOpenClientDetailView(int? clientId)
+        private async void OnOpenDetailView(OpenDetailViewEventArgs args)
         {
-            if (GymClientDetailViewModel != null && GymClientDetailViewModel.HasChanges)
+            if (DetailViewModel != null && DetailViewModel.HasChanges)
             {
                 var result = _messageDialogService.ShowOkCancelDialog("You have made changes. Do you really want to navigate away?", "Warning");
 
                 if (result == MessageDialogResult.Cancel) return;
             }
-            GymClientDetailViewModel = _gymClientDetailViewModelCreator();
-            await GymClientDetailViewModel.LoadAsync(clientId);
+
+            switch (args.ViewModelName)
+            {
+                case nameof(GymClientDetailViewModel):
+                    DetailViewModel = _gymClientDetailViewModelCreator();
+                    break;
+            }
+
+            await DetailViewModel.LoadAsync(args.Id);
         }
 
-        private void OnCreateNewClientExecute()
+        private void OnCreateNewDetailExecute(Type viewModelType)
         {
-            OnOpenClientDetailView(null);
+            OnOpenDetailView(new OpenDetailViewEventArgs { ViewModelName = viewModelType.Name});
         }
 
-        private void AfterClientDeleted(int clientId)
+        private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
         {
-            GymClientDetailViewModel = null;
+            DetailViewModel = null;
         }
     }
 }

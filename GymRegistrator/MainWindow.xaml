@@ -25,10 +25,10 @@
         </Grid.ColumnDefinitions>
         <Menu Grid.ColumnSpan="2" FontSize="20">
             <MenuItem Header="Create">
-                <MenuItem Header="New Client" Command="{Binding CreateNewClientCommand}"></MenuItem>
+                <MenuItem Header="New Client" Command="{Binding CreateNewDetailCommand}" CommandParameter="{x:Type viewModel:GymClientDetailViewModel}"></MenuItem>
             </MenuItem>
         </Menu>
         <view:NavigationView Grid.Row="1" DataContext="{Binding NavigationViewModel}"></view:NavigationView>
-        <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding GymClientDetailViewModel}"></ContentControl>
+        <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding DetailViewModel}"></ContentControl>
     </Grid>
 </Window>

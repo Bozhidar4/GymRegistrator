@@ -11,22 +11,19 @@ using System.Windows.Input;
 
 namespace GymRegistrator.UI.ViewModel
 {
-    public class GymClientDetailViewModel : ViewModelBase, IGymClientDetailViewModel
+    public class GymClientDetailViewModel : DetailViewModelBase, IGymClientDetailViewModel
     {
         private IGymClientRepository _gymClientRepository;
-        private IEventAggregator _eventAggregator;
         private IMessageDialogService _messageDialogService;
         private GymClientWrapper _client;
         private bool _hasChanges;
 
         public GymClientDetailViewModel(IGymClientRepository gymClientRepository, IEventAggregator eventAggregator, IMessageDialogService messageDialogService)
+            :base(eventAggregator)
         {
             _gymClientRepository = gymClientRepository;
-            _eventAggregator = eventAggregator;
             _messageDialogService = messageDialogService;
 
-            SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
-            DeleteCommand = new DelegateCommand(OnDeleteExecute);
         }
 
         public GymClientWrapper Client
@@ -39,24 +36,7 @@ namespace GymRegistrator.UI.ViewModel
             }
         }
 
-        public bool HasChanges
-        {
-            get { return _hasChanges; }
-            set 
-            {
-                if (_hasChanges != value)
-                {
-                    _hasChanges = value;
-                    OnPropertyChanged();
-                    ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
-                }
-            }
-        }
-
-        public ICommand SaveCommand { get; }
-        public ICommand DeleteCommand { get; }
-
-        public async Task LoadAsync(int? clientId)
+        public override async Task LoadAsync(int? clientId)
         {
             var gymClient = clientId.HasValue
                 ? await _gymClientRepository.GetByIdAsync(clientId.Value)
@@ -81,19 +61,14 @@ namespace GymRegistrator.UI.ViewModel
             if (gymClient.Id == 0) gymClient.FirstName = "";
         }
 
-        private async void OnSaveExecute()
+        protected override async void OnSaveExecute()
         {
             await _gymClientRepository.SaveAsync();
             HasChanges = _gymClientRepository.HasChanges();
-            _eventAggregator.GetEvent<AfterClientSavedEvent>().Publish(
-                new AfterClientSavedEventArgs
-                {
-                    Id = Client.Id,
-                    DisplayMember = $"{Client.FirstName} {Client.LastName}"
-                });
+            RaiseDetailSavedEvent(Client.Id, $"{Client.FirstName} {Client.LastName}");
         }
 
-        private bool OnSaveCanExecute()
+        protected override bool OnSaveCanExecute()
         {
             return Client != null && !Client.HasErrors && HasChanges;
         }
@@ -105,7 +80,7 @@ namespace GymRegistrator.UI.ViewModel
             return gymClient;
         }
 
-        private async void OnDeleteExecute()
+        protected override async void OnDeleteExecute()
         {
             var result = _messageDialogService.ShowOkCancelDialog($"Do you really want to delete client {Client.FirstName} {Client.LastName}?", "Warning");
 
@@ -113,8 +88,7 @@ namespace GymRegistrator.UI.ViewModel
             {
                 _gymClientRepository.Remove(Client.Model);
                 await _gymClientRepository.SaveAsync();
-
-                _eventAggregator.GetEvent<AfterClientDeletedEvent>().Publish(Client.Id);
+                RaiseDetailDeletedEvent(Client.Id);
             }
         }
     }

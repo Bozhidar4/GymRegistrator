@@ -2,13 +2,14 @@
 
 namespace GymRegistrator.UI.Event
 {
-    public class AfterClientSavedEvent : PubSubEvent<AfterClientSavedEventArgs>
+    public class AfterDetailSavedEvent : PubSubEvent<AfterDetailSavedEventArgs>
     {
     }
 
-    public class AfterClientSavedEventArgs
+    public class AfterDetailSavedEventArgs
     {
         public int Id { get; set; }
         public string DisplayMember { get; set; }
+        public string ViewModelName { get; set; }
     }
 }

@@ -18,8 +18,8 @@ namespace GymRegistrator.UI.ViewModel
             _clientLookupService = clientLookupService;
             _eventAggregator = eventAggregator;
             GymClients = new ObservableCollection<NavigationItemViewModel>();
-            _eventAggregator.GetEvent<AfterClientSavedEvent>().Subscribe(AfterClientSaved);
-            _eventAggregator.GetEvent<AfterClientDeletedEvent>().Subscribe(AfterClientDeleted);
+            _eventAggregator.GetEvent<AfterDetailSavedEvent>().Subscribe(AfterDetailSaved);
+            _eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
         }
 
         public ObservableCollection<NavigationItemViewModel> GymClients { get; }
@@ -30,29 +30,39 @@ namespace GymRegistrator.UI.ViewModel
             GymClients.Clear();
             foreach (var item in lookup)
             {
-                GymClients.Add(new NavigationItemViewModel(item.Id, item.DisplayMember, _eventAggregator));
+                GymClients.Add(new NavigationItemViewModel(item.Id, item.DisplayMember, nameof(GymClientDetailViewModel), _eventAggregator));
             }
         }
 
-        private void AfterClientSaved(AfterClientSavedEventArgs obj)
+        private void AfterDetailSaved(AfterDetailSavedEventArgs obj)
         {
-            var lookupItem = GymClients.SingleOrDefault(c => c.Id == obj.Id);
+            switch (obj.ViewModelName)
+            {
+                case nameof(GymClientDetailViewModel):
+                    var lookupItem = GymClients.SingleOrDefault(c => c.Id == obj.Id);
 
-            if (lookupItem == null)
-            {
-                GymClients.Add(new NavigationItemViewModel(obj.Id, obj.DisplayMember, _eventAggregator));
-            }
-            else
-            {
-                lookupItem.DisplayMember = obj.DisplayMember;
+                    if (lookupItem == null)
+                    {
+                        GymClients.Add(new NavigationItemViewModel(obj.Id, obj.DisplayMember, nameof(GymClientDetailViewModel), _eventAggregator));
+                    }
+                    else
+                    {
+                        lookupItem.DisplayMember = obj.DisplayMember;
+                    }
+                    break;
             }
         }
 
-        private void AfterClientDeleted(int clientId)
+        private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
         {
-            var client = GymClients.SingleOrDefault(c => c.Id == clientId);
+            switch (args.ViewModelName)
+            {
+                case nameof(GymClientDetailViewModel):
+                    var client = GymClients.SingleOrDefault(c => c.Id == args.Id);
 
-            if (client != null) GymClients.Remove(client);
+                    if (client != null) GymClients.Remove(client);
+                    break;
+            }
         }
     }
 }
