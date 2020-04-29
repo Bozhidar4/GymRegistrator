@@ -19,7 +19,7 @@ namespace GymRegistrator.UI.ViewModel
         private bool _hasChanges;
 
         public GymClientDetailViewModel(IGymClientRepository gymClientRepository, IEventAggregator eventAggregator, IMessageDialogService messageDialogService)
-            :base(eventAggregator)
+            :base(eventAggregator, messageDialogService)
         {
             _gymClientRepository = gymClientRepository;
             _messageDialogService = messageDialogService;
@@ -36,35 +36,22 @@ namespace GymRegistrator.UI.ViewModel
             }
         }
 
-        public override async Task LoadAsync(int? clientId)
+        public override async Task LoadAsync(int clientId)
         {
-            var gymClient = clientId.HasValue
-                ? await _gymClientRepository.GetByIdAsync(clientId.Value)
+            var gymClient = clientId > 0
+                ? await _gymClientRepository.GetByIdAsync(clientId)
                 : CreateNewClient();
 
-            Client = new GymClientWrapper(gymClient);
+            Id = clientId;
 
-            Client.PropertyChanged += (s, e) =>
-            {
-                if (!HasChanges)
-                {
-                    HasChanges = _gymClientRepository.HasChanges();
-                }
-                if (e.PropertyName == nameof(Client.HasErrors))
-                {
-                    ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
-                }
-            };
-
-            ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
-
-            if (gymClient.Id == 0) gymClient.FirstName = "";
+            InitializeGymClient(gymClient);
         }
 
         protected override async void OnSaveExecute()
         {
             await _gymClientRepository.SaveAsync();
             HasChanges = _gymClientRepository.HasChanges();
+            Id = Client.Id;
             RaiseDetailSavedEvent(Client.Id, $"{Client.FirstName} {Client.LastName}");
         }
 
@@ -90,6 +77,38 @@ namespace GymRegistrator.UI.ViewModel
                 await _gymClientRepository.SaveAsync();
                 RaiseDetailDeletedEvent(Client.Id);
             }
+        }
+
+        private void InitializeGymClient(GymClient gymClient)
+        {
+            Client = new GymClientWrapper(gymClient);
+            Client.PropertyChanged += (s, e) =>
+            {
+                if (!HasChanges)
+                {
+                    HasChanges = _gymClientRepository.HasChanges();
+                }
+                if (e.PropertyName == nameof(Client.HasErrors))
+                {
+                    ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+                }
+                if (e.PropertyName == nameof(Client.FirstName)
+                 || e.PropertyName == nameof(Client.LastName))
+                {
+                    SetTitle();
+                }
+
+            };
+            ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+
+            if (Client.Id == 0) Client.FirstName = "";
+            
+            SetTitle();
+        }
+
+        private void SetTitle()
+        {
+            Title = $"{Client.FirstName} {Client.LastName}";
         }
     }
 }

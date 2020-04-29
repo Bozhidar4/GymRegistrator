@@ -24,7 +24,7 @@ namespace GymRegistrator.UI.Startup
 
             builder.RegisterType<MainViewModel>().AsSelf();
             builder.RegisterType<NavigationViewModel>().As<INavigationViewModel>();
-            builder.RegisterType<GymClientDetailViewModel>().As<IGymClientDetailViewModel>();
+            builder.RegisterType<GymClientDetailViewModel>().Keyed<IGymClientDetailViewModel>(nameof(GymClientDetailViewModel));
             
             builder.RegisterType<LookupDataService>().AsImplementedInterfaces();
             builder.RegisterType<GymClientRepository>().As<IGymClientRepository>();

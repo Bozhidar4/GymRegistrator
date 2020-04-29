@@ -1,8 +1,11 @@
-﻿using GymRegistrator.UI.Event;
+﻿using Autofac.Features.Indexed;
+using GymRegistrator.UI.Event;
 using GymRegistrator.UI.View.Services;
 using Prism.Commands;
 using Prism.Events;
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -11,12 +14,13 @@ namespace GymRegistrator.UI.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private IEventAggregator _eventAggregator;
-        private Func<IGymClientDetailViewModel> _gymClientDetailViewModelCreator;
+        private IIndex<string, IGymClientDetailViewModel> _gymClientDetailViewModelCreator;
         private IMessageDialogService _messageDialogService;
-        private IDetailViewModel _detailViewModel;
+        private IDetailViewModel _selectedDetailViewModel;
+        private int nextNewItemId = 0;
 
         public MainViewModel(INavigationViewModel navigationViewModel,
-            Func<IGymClientDetailViewModel> gymClientDetailViewModelCreator, 
+            IIndex<string, IGymClientDetailViewModel> gymClientDetailViewModelCreator, 
             IEventAggregator eventAggregator,
             IMessageDialogService messageDialogService)
         {
@@ -24,8 +28,11 @@ namespace GymRegistrator.UI.ViewModel
             _gymClientDetailViewModelCreator = gymClientDetailViewModelCreator;
             _messageDialogService = messageDialogService;
 
+            DetailViewModels = new ObservableCollection<IDetailViewModel>();
+
             _eventAggregator.GetEvent<OpenDetailViewEvent>().Subscribe(OnOpenDetailView);
             _eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
+            _eventAggregator.GetEvent<AfterDetailClosedEvent>().Subscribe(AfterDetailClosed);
 
             CreateNewDetailCommand = new DelegateCommand<Type>(OnCreateNewDetailExecute);
 
@@ -33,13 +40,15 @@ namespace GymRegistrator.UI.ViewModel
         }
 
         public INavigationViewModel NavigationViewModel { get; }
-        
-        public IDetailViewModel DetailViewModel
+
+        public ObservableCollection<IDetailViewModel> DetailViewModels { get; }
+
+        public IDetailViewModel SelectedDetailViewModel
         {
-            get { return _detailViewModel; }
-            private set 
+            get { return _selectedDetailViewModel; }
+            set 
             {
-                _detailViewModel = value;
+                _selectedDetailViewModel = value;
                 OnPropertyChanged();
             }
         }
@@ -54,31 +63,40 @@ namespace GymRegistrator.UI.ViewModel
 
         private async void OnOpenDetailView(OpenDetailViewEventArgs args)
         {
-            if (DetailViewModel != null && DetailViewModel.HasChanges)
-            {
-                var result = _messageDialogService.ShowOkCancelDialog("You have made changes. Do you really want to navigate away?", "Warning");
+            var detailViewModel = DetailViewModels.SingleOrDefault(m => m.Id == args.Id && m.GetType().Name == args.ViewModelName);
 
-                if (result == MessageDialogResult.Cancel) return;
+            if (detailViewModel == null)
+            {
+                detailViewModel = _gymClientDetailViewModelCreator[args.ViewModelName];
+                await detailViewModel.LoadAsync(args.Id);
+                DetailViewModels.Add(detailViewModel);
             }
 
-            switch (args.ViewModelName)
-            {
-                case nameof(GymClientDetailViewModel):
-                    DetailViewModel = _gymClientDetailViewModelCreator();
-                    break;
-            }
-
-            await DetailViewModel.LoadAsync(args.Id);
+            SelectedDetailViewModel = detailViewModel;
         }
 
         private void OnCreateNewDetailExecute(Type viewModelType)
         {
-            OnOpenDetailView(new OpenDetailViewEventArgs { ViewModelName = viewModelType.Name});
+            OnOpenDetailView(new OpenDetailViewEventArgs {Id = nextNewItemId--, ViewModelName = viewModelType.Name});
         }
 
         private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
         {
-            DetailViewModel = null;
+            RemoveDetailViewModel(args.Id, args.ViewModelName);
+        }
+
+        private void AfterDetailClosed(AfterDetailClosedEventArgs args)
+        {
+            RemoveDetailViewModel(args.Id, args.ViewModelName);
+        }
+
+        private void RemoveDetailViewModel(int id, string viewModelName)
+        {
+            var detailViewModel = DetailViewModels.SingleOrDefault(m => m.Id == id && m.GetType().Name == viewModelName);
+            if (detailViewModel != null)
+            {
+                DetailViewModels.Remove(detailViewModel);
+            };
         }
     }
 }
